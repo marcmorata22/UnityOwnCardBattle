@@ -44,10 +44,3 @@ public class HandController : MonoBehaviour
         }     
     }
 }
-//   //heldCards[i].transform.position = cardPositions[i]; -> lo ha comentado de ehcho al final del vídeo quita la rotation también supongo porque ahora funciona con el lerp para la animacion
-// preguntar de cuando abre el paint que significa que  al incio e smas grande la sepración pero luego ams pequeña, no entiendo lerp
-//  Quaternion no entiendo anda croe que e sla para la rotaion y el tio en el instpector unity le deja ver los tipos pero  a mi no me deja
-
-// Vídeo Raising cards preguntar como sabe el tamaño del collider tan exacto
-//         _handController = FindObjectOfType<HandController>();  MoveToPoint(_handController.cardPositions[handPosition] + new Vector3(0, 1f, .5f), Quaternion.identity); y la declaración  del controlador no la entiendo para que srve esto
-
