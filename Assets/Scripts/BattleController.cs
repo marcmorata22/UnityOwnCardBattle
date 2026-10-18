@@ -25,6 +25,8 @@ public class BattleController : MonoBehaviour
     {
         // Al comenzar la partida, rellenamos el maná del jugador con el valor inicial (4)
         playerMana = startingMana;
+        // Actualizamos la UI para mostrar el maná inicial
+        UIController.instance.SetPlayerManaText(playerMana); 
     }
 
     // Update se ejecuta en cada fotograma
@@ -45,5 +47,7 @@ public class BattleController : MonoBehaviour
             // Forzamos a que el maná se quede en cero para evitar mostrar números negativos en pantalla
             playerMana = 0;
         }
+
+        UIController.instance.SetPlayerManaText(playerMana);
     }
 }

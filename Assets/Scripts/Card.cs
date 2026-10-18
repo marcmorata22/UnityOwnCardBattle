@@ -109,6 +109,8 @@ public class Card : MonoBehaviour
                         {
                             // No hay maná suficiente.
                             ReturnToHand();
+
+                            UIController.instance.ShowManaWarning();
                         }
                     }
                     else
