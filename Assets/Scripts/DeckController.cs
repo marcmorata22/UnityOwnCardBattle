@@ -11,6 +11,9 @@ public class DeckController : MonoBehaviour
     private List<CardScriptableObject> activeCards = new List<CardScriptableObject>();
 
     public Card cardToSpawn;
+    public Transform cardSpawnPoint;
+    public int drawCardCost = 2;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -22,10 +25,10 @@ public class DeckController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Keyboard.current.tKey.wasPressedThisFrame)
+        /*if (Keyboard.current.tKey.wasPressedThisFrame)
         {
             DrawCardToHand();
-        }
+        } */
     }
 
     public void SetupDeck()
@@ -65,7 +68,7 @@ public class DeckController : MonoBehaviour
         }
 
         // Instancia el prefeb de la carta en el mundo
-        Card newCard = Instantiate(cardToSpawn, transform.position, Quaternion.identity);
+        Card newCard = Instantiate(cardToSpawn, transform.position, transform.rotation);
 
         // Asigna los datos de la primera carta activa y la configura
         newCard.cardSO = activeCards[0];
@@ -73,5 +76,20 @@ public class DeckController : MonoBehaviour
 
         // La elimina de la lista activa para que no se repita
         activeCards.RemoveAt(0);
+
+        HandController.instance.addCardToHand(newCard);
+    }
+    public void DrawCardForMana()
+    {
+        if (BattleController.instance.playerMana >= drawCardCost)
+        {
+            DrawCardToHand();
+            BattleController.instance.SpendPlayerMana(drawCardCost);
+        }
+        else
+        {
+            UIController.instance.ShowManaWarning();
+            UIController.instance.drawCardButton.SetActive(false);
+        }
     }
 }

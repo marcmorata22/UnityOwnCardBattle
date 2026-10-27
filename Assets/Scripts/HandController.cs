@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class HandController : MonoBehaviour
 {
+    public static HandController instance;
     // Lista de las cartas que actualmente tenemos en la mano
     public List<Card> heldCards = new List<Card>();
 
@@ -11,6 +12,11 @@ public class HandController : MonoBehaviour
 
     // Transformaciones que marcan el punto inicial y final donde se extienden las cartas en la mano
     public Transform minPos, maxPos;
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     // Start se ejecuta una vez al iniciar el juego
     void Start()
@@ -74,6 +80,12 @@ public class HandController : MonoBehaviour
         }
 
         // Una vez eliminada, recalculamos las posiciones para que las cartas restantes cierren el hueco
+        SetCardPositionInHand();
+    }
+
+    public void addCardToHand(Card cardToAdd)
+    {
+        heldCards.Add(cardToAdd);
         SetCardPositionInHand();
     }
 }
