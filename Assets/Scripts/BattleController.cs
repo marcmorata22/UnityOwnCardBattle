@@ -12,6 +12,7 @@ public class BattleController : MonoBehaviour
 
     // Variable que almacena la cantidad actual de maná que tiene el jugador
     public int playerMana;
+    public int startingCardsAmount = 4;
 
     // Awake se ejecuta antes que el método Start y antes de que empiece el juego
     private void Awake()
@@ -26,7 +27,9 @@ public class BattleController : MonoBehaviour
         // Al comenzar la partida, rellenamos el maná del jugador con el valor inicial (4)
         playerMana = startingMana;
         // Actualizamos la UI para mostrar el maná inicial
-        UIController.instance.SetPlayerManaText(playerMana); 
+        UIController.instance.SetPlayerManaText(playerMana);
+        //Forzar Bug de variable pública, también podemos cambiar el nombre a la varible
+        DeckController.instance.DrawMultipleCards(startingCardsAmount);
     }
 
     // Update se ejecuta en cada fotograma

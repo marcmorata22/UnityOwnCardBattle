@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -13,12 +14,16 @@ public class DeckController : MonoBehaviour
     public Card cardToSpawn;
     public Transform cardSpawnPoint;
     public int drawCardCost = 2;
+    public float waitBetweenDrawingCards = .25f;
 
+    private void Awake()
+    {
+        instance = this;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        instance = this;
         SetupDeck();
     }
 
@@ -59,6 +64,29 @@ public class DeckController : MonoBehaviour
         }
     }
 
+    // Método público que recibe cuántas cartas queremos robar (por ejemplo, 5 al iniciar la batalla)
+    public void DrawMultipleCards(int amountToDraw)
+    {
+        // Iniciamos una "corrutina" (un proceso que puede pausar su ejecución en el tiempo)
+        // Le pasamos la función encargada de hacer la pausa y el número de cartas.
+        StartCoroutine(DrawMultipleCo(amountToDraw));
+    }
+
+    // Corrutina que se encarga de sacar las cartas una a una dejando un espacio de tiempo entre ellas
+    IEnumerator DrawMultipleCo(int amountToDraw)
+    {
+        // Bucle que se repite tantas veces como cartas queramos robar (desde 0 hasta amountToDraw - 1)
+        for (int i = 0; i < amountToDraw; i++)
+        {
+            // 1. Ejecutamos la función normal para sacar una sola carta y ponerla en la mano
+            DrawCardToHand();
+
+            // 2. Pausamos este bucle temporalmente durante los segundos que indique la variable 'waitBetweenDrawingCards'
+            // (Esto evita que salgan todas de golpe y crea el efecto visual de ir repartiéndolas una a una)
+            yield return new WaitForSeconds(waitBetweenDrawingCards);
+        }
+    }
+
     public void DrawCardToHand()
     {
         // Si el mazo se vacía, lo recicla
@@ -79,17 +107,20 @@ public class DeckController : MonoBehaviour
 
         HandController.instance.addCardToHand(newCard);
     }
+
+    // Método que permite robar una carta gastando maná si tenemos lo suficiente
     public void DrawCardForMana()
     {
+        // Comprueba si el jugador tiene suficiente maná
         if (BattleController.instance.playerMana >= drawCardCost)
         {
-            DrawCardToHand();
-            BattleController.instance.SpendPlayerMana(drawCardCost);
+            DrawCardToHand(); // Roba la carta
+            BattleController.instance.SpendPlayerMana(drawCardCost); // Descuenta el maná
         }
         else
         {
-            UIController.instance.ShowManaWarning();
-            UIController.instance.drawCardButton.SetActive(false);
+            UIController.instance.ShowManaWarning(); // Muestra aviso de falta de maná
+            UIController.instance.drawCardButton.SetActive(false); // Oculta el botón de robar
         }
     }
 }
