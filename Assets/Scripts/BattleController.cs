@@ -13,7 +13,9 @@ public class BattleController : MonoBehaviour
 
     // Variable que almacena la cantidad actual de maná que tiene el jugador
     public int playerMana;
+    private int currentPlayerMaxMana;
     public int startingCardsAmount = 4;
+    public int cardsToDrawPerTurn = 1;
 
     public enum TurnOrder
     {
@@ -34,10 +36,8 @@ public class BattleController : MonoBehaviour
     // Start se ejecuta una vez al arrancar el juego
     void Start()
     {
-        // Al comenzar la partida, rellenamos el maná del jugador con el valor inicial (4)
-        playerMana = startingMana;
-        // Actualizamos la UI para mostrar el maná inicial
-        UIController.instance.SetPlayerManaText(playerMana);
+        currentPlayerMaxMana = startingMana;
+        FillPlayerMana();
         //Forzar Bug de variable pública, también podemos cambiar el nombre a la varible
         DeckController.instance.DrawMultipleCards(startingCardsAmount);
     }
@@ -68,37 +68,50 @@ public class BattleController : MonoBehaviour
         UIController.instance.SetPlayerManaText(playerMana);
     }
 
+    public void FillPlayerMana()
+    {
+        // Al comenzar la partida, rellenamos el maná del jugador con el valor inicial (4)
+        playerMana = currentPlayerMaxMana;
+        // Actualizamos la UI para mostrar el maná inicial
+        UIController.instance.SetPlayerManaText(playerMana);
+    }
+
     public void AdvanceTurn()
     {
         currentPhase++;
-        
+
+        // Comprueba si hemos llegado al final del enum TurnOrder para reiniciar el ciclo
         if ((int)currentPhase >= System.Enum.GetValues(typeof(TurnOrder)).Length)
         {
             currentPhase = 0;
         }
 
+        // Evalúa la fase actual para ejecutar la lógica correspondiente
         switch (currentPhase)
         {
             case TurnOrder.playerActive:
 
-                //UIController.instance.endTurnButton.SetActive(true);
-                //UIController.instance.drawCardButton.SetActive(true);
+                // Activa los botones de acción del jugador en su interfaz
+                UIController.instance.endTurnButton.SetActive(true);
+                UIController.instance.drawCardButton.SetActive(true);
 
-                //if (currentPlayerMaxMana < maxMana)
-                //{
-                //    currentPlayerMaxMana++;
-                //}
+                // Aumenta el maná máximo del jugador si no ha llegado al límite
+                if (currentPlayerMaxMana < maxMana)
+                {
+                    currentPlayerMaxMana++;
+                }
 
-                //FillPlayerMana();
+                // Rellena el maná disponible y roba las cartas del turno
+                FillPlayerMana();
 
-                //DeckController.instance.DrawMultipleCards(cardsToDrawPerTurn);
+                DeckController.instance.DrawMultipleCards(cardsToDrawPerTurn);
 
                 break;
 
             case TurnOrder.playerCardAttacks:
 
                 Debug.Log("skipping player card attacks");
-                //AdvanceTurn();
+                AdvanceTurn();
 
                 //CardPointsController.instance.PlayerAttack();
 
@@ -130,5 +143,15 @@ public class BattleController : MonoBehaviour
                 break;
 
         }
+    }
+
+    public void EndPlayerTurn()
+    {
+        // Oculta los botones del jugador al terminar su turno
+        UIController.instance.endTurnButton.SetActive(false);
+        UIController.instance.drawCardButton.SetActive(false);
+
+        // Pasa a la siguiente fase o turno
+        AdvanceTurn();
     }
 }
