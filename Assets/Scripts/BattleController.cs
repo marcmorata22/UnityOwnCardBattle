@@ -1,5 +1,6 @@
-using System.ComponentModel;
 using UnityEngine;
+using UnityEngine.InputSystem;
+
 
 public class BattleController : MonoBehaviour
 {
@@ -13,6 +14,15 @@ public class BattleController : MonoBehaviour
     // Variable que almacena la cantidad actual de maná que tiene el jugador
     public int playerMana;
     public int startingCardsAmount = 4;
+
+    public enum TurnOrder
+    {
+        playerActive,
+        playerCardAttacks,
+        enemyActive,
+        enemyCardAttacks
+    }
+    public TurnOrder currentPhase;
 
     // Awake se ejecuta antes que el método Start y antes de que empiece el juego
     private void Awake()
@@ -35,7 +45,11 @@ public class BattleController : MonoBehaviour
     // Update se ejecuta en cada fotograma
     void Update()
     {
-        // Actualmente vacío porque no necesitamos lógica constante por fotograma aquí
+        if (Keyboard.current.tKey.wasPressedThisFrame)
+        {
+            AdvanceTurn();
+        }
+
     }
 
     // Función pública que se llama desde la carta para gastar maná al jugarla
@@ -52,5 +66,69 @@ public class BattleController : MonoBehaviour
         }
 
         UIController.instance.SetPlayerManaText(playerMana);
+    }
+
+    public void AdvanceTurn()
+    {
+        currentPhase++;
+        
+        if ((int)currentPhase >= System.Enum.GetValues(typeof(TurnOrder)).Length)
+        {
+            currentPhase = 0;
+        }
+
+        switch (currentPhase)
+        {
+            case TurnOrder.playerActive:
+
+                //UIController.instance.endTurnButton.SetActive(true);
+                //UIController.instance.drawCardButton.SetActive(true);
+
+                //if (currentPlayerMaxMana < maxMana)
+                //{
+                //    currentPlayerMaxMana++;
+                //}
+
+                //FillPlayerMana();
+
+                //DeckController.instance.DrawMultipleCards(cardsToDrawPerTurn);
+
+                break;
+
+            case TurnOrder.playerCardAttacks:
+
+                Debug.Log("skipping player card attacks");
+                //AdvanceTurn();
+
+                //CardPointsController.instance.PlayerAttack();
+
+                break;
+
+            case TurnOrder.enemyActive:
+
+                Debug.Log("skipping enemy actions");
+                AdvanceTurn();
+
+                //if (currentEnemyMaxMana < maxMana)
+                //{
+                //    currentEnemyMaxMana++;
+                //}
+
+                //FillEnemyMana();
+
+                //EnemyController.instance.StartAction();
+
+                break;
+
+            case TurnOrder.enemyCardAttacks:
+
+                Debug.Log("skipping enemy card attacks");
+                AdvanceTurn();
+
+                //CardPointsController.instance.EnemyAttack();
+
+                break;
+
+        }
     }
 }

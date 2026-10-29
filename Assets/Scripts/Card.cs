@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityPipeline.Microsoft.CodeAnalysis.CSharp.Syntax;
 
 public class Card : MonoBehaviour
 {
@@ -83,7 +84,7 @@ public class Card : MonoBehaviour
             if (Mouse.current.leftButton.wasPressedThisFrame && justPressed == false)
             {
                 // Mismo rayo, pero ahora solo choca con los huecos del tablero.
-                if (Physics.Raycast(ray, out hit, 100f, whatIsPlacement))
+                if (Physics.Raycast(ray, out hit, 100f, whatIsPlacement) && BattleController.instance.currentPhase == BattleController.TurnOrder.playerActive)
                 {
                     // Si el objeto tocado no tiene CardPlacePoint, esto es null y la línea siguiente falla.
                     CardPlacePoint selectedPoint = hit.collider.GetComponent<CardPlacePoint>();
@@ -123,7 +124,7 @@ public class Card : MonoBehaviour
                 {
                     // El rayo no tocó ningún hueco.
                     ReturnToHand();
-                }
+                }                
             }
         }
 
@@ -180,7 +181,7 @@ public class Card : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (inHand)
+        if (inHand && BattleController.instance.currentPhase == BattleController.TurnOrder.playerActive)
         {
             isSelected = true;
             // Sin collider no salta OnMouseExit al arrastrarla, que la mandaría de vuelta a la mano.
